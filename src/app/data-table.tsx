@@ -8,8 +8,16 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import React from "react";
-import { DensityFeature, type DensityState } from "../packages";
+import {
+  DensityFeature,
+  // EditableCellFeature,
+  type DensityState,
+} from "../packages";
 import { makeData, type Person } from "./makeData";
+import { defaultColumn } from "../packages/editable/components/default-column";
+import { EditableCellFeature } from "../packages/editable/editable-cell-feature";
+import type { EditingCell } from "../packages/editable/editable-cell.types";
+// import { defaultColumn } from "./components/cell";
 
 export function DataTable() {
   const columns = React.useMemo<ColumnDef<Person>[]>(
@@ -50,11 +58,19 @@ export function DataTable() {
 
   const [data, setData] = React.useState(() => makeData(100));
   const [density, setDensity] = React.useState<DensityState>("md");
+  // const [editingCell, setEditingCell] = React.useState<EditingCell | null>(
+  //   null,
+  // );
+  // const [editingValue, setEditingValue] = React.useState<unknown>(null);
+  const [editingCell, setEditingCell] = React.useState<EditingCell | null>(
+    null,
+  );
 
   const table = useReactTable({
-    _features: [DensityFeature], // 自作の機能をテーブルに生成する
+    _features: [DensityFeature, EditableCellFeature], // 自作の機能をテーブルに生成する
     columns,
     data,
+    defaultColumn,
     debugTable: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -62,8 +78,32 @@ export function DataTable() {
     getPaginationRowModel: getPaginationRowModel(),
     state: {
       density, // テーブルに密度状態を渡す
+      // editingCell,
+      // editingValue,
+      editingCell,
     },
     onDensityChange: setDensity,
+    // onEditingCellChange: setEditingCell,
+    // onEditingValueChange: setEditingValue,
+    // onCommitEditingCell: (cell, value) => {
+    //   //   setData((old) =>
+    //   //     old.map((row, i) =>
+    //   //       row.id === cell.rowId ? { ...row, [cell.columnId]: value } : row,
+    //   //     ),
+    //   //   );
+    // },
+    onEditingCellChange: setEditingCell,
+    onEditingCellCommit: setData,
+    // updateData: (rowIndex, columnId, value) => {
+    //   setData((old) =>
+    //     old.map((row, index) => {
+    //       if (index === rowIndex) {
+    //         return { ...old[rowIndex]!, [columnId]: value };
+    //       }
+    //       return row;
+    //     }),
+    //   );
+    // },
   });
 
   return (
@@ -74,6 +114,12 @@ export function DataTable() {
         className="border rounded p-1 bg-blue-500 text-white mb-2 w-64"
       >
         Toggle Density
+      </button>
+      <button
+        onClick={() => console.log(table.getCoreRowModel().rows)}
+        className="border rounded p-1 bg-blue-500 text-white mb-2 w-64"
+      >
+        Show Data
       </button>
       <table>
         <thead>
@@ -88,9 +134,9 @@ export function DataTable() {
                     style={{
                       // 自作の機能を使用する
                       padding:
-                        density === "sm"
+                        table.getState().density === "sm"
                           ? "4px"
-                          : density === "md"
+                          : table.getState().density === "md"
                             ? "8px"
                             : "16px",
                       transition: "padding 0.2s",
