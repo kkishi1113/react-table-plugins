@@ -17,6 +17,7 @@ import { makeData, type Person } from "./makeData";
 import { defaultColumn } from "../packages/editable/components/default-column";
 import { EditableCellFeature } from "../packages/editable/editable-cell-feature";
 import type { EditingCell } from "../packages/editable/editable-cell.types";
+import { SelectFieldCell } from "../packages/editable/components/select-field-cell";
 // import { defaultColumn } from "./components/cell";
 
 export function DataTable() {
@@ -50,6 +51,26 @@ export function DataTable() {
       {
         accessorKey: "progress",
         header: "Profile Progress",
+        footer: (props) => props.column.id,
+      },
+      {
+        accessorKey: "role",
+        header: "Role",
+        /**
+         * セルにSelectFieldCellコンポーネントを適用し、インライン編集可能なセレクトボックスを提供する。
+         * @param props - Tableからのセルコンテキスト
+         * @returns {JSX.Element} プロパティと選択肢を渡したSelectFieldCell
+         */
+        cell: (props) => (
+          <SelectFieldCell
+            {...props}
+            options={[
+              { label: "管理者", value: "admin" },
+              { label: "ユーザー", value: "user" },
+              { label: "ゲスト", value: "guest" },
+            ]}
+          />
+        ),
         footer: (props) => props.column.id,
       },
     ],

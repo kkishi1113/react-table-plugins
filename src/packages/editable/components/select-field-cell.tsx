@@ -21,12 +21,12 @@ export interface SelectFieldCellProps<
  * @param {SelectFieldCellProps<TData, TValue>} props - コンポーネントのプロパティ
  * @returns {JSX.Element} select 要素
  */
-export const SelectFieldCell = <TData extends RowData, TValue>({
+export function SelectFieldCell<TData extends RowData, TValue>({
   getValue,
   cell,
   column,
   options,
-}: SelectFieldCellProps<TData, TValue>) => {
+}: SelectFieldCellProps<TData, TValue>) {
   const initialValue = getValue() as string | number;
   const [value, setValue] = useState(initialValue);
 
@@ -59,9 +59,9 @@ export const SelectFieldCell = <TData extends RowData, TValue>({
           cell.setIsEditing(false);
         }
       }}
-      autoFocus
+      onFocus={() => cell.setIsEditing(true)}
+      autoFocus={cell.getIsEditing()}
       style={{ width: column.getSize(), padding: "0px" }}
-      disabled={!cell.getIsEditing()}
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
@@ -70,4 +70,4 @@ export const SelectFieldCell = <TData extends RowData, TValue>({
       ))}
     </select>
   );
-};
+}

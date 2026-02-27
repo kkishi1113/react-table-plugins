@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 
 export const defaultColumn: Partial<ColumnDef<any>> = {
-  cell: ({ getValue, row, column, table, cell }) => {
+  cell: ({ getValue, column, cell }) => {
     const initialValue = getValue();
     const [value, setValue] = useState(initialValue);
 
@@ -25,9 +25,9 @@ export const defaultColumn: Partial<ColumnDef<any>> = {
           if (e.key === "Enter") onBlur();
           if (e.key === "Escape") cell.setIsEditing(false);
         }}
-        autoFocus
+        onFocus={() => cell.setIsEditing(true)}
+        autoFocus={cell.getIsEditing()}
         style={{ width: column.getSize(), padding: "0px" }}
-        disabled={cell.getIsEditing()}
       />
     );
 

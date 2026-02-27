@@ -85,4 +85,28 @@ describe("SelectFieldCell", () => {
 
     expect(mockSetIsEditing).toHaveBeenCalledWith(false);
   });
+
+  it("編集モードでない場合（getIsEditing() が false）でも、要素が有効（disabled でない）であること", () => {
+    const inactiveContext = {
+      ...mockCellContext,
+      cell: {
+        ...mockCellContext.cell,
+        getIsEditing: () => false,
+      },
+    } as any;
+
+    render(<SelectFieldCell {...inactiveContext} options={options} />);
+
+    const selectElement = screen.getByRole("combobox") as HTMLSelectElement;
+    expect(selectElement.disabled).toBe(false);
+  });
+
+  it("フォーカスを得た際に、cell.setIsEditing(true) が呼ばれること", () => {
+    render(<SelectFieldCell {...mockCellContext} options={options} />);
+
+    const selectElement = screen.getByRole("combobox");
+    fireEvent.focus(selectElement);
+
+    expect(mockSetIsEditing).toHaveBeenCalledWith(true);
+  });
 });

@@ -1,5 +1,8 @@
 import { faker } from "@faker-js/faker";
 
+/**
+ * ユーザーのデータを表す型
+ */
 export type Person = {
   firstName: string;
   lastName: string;
@@ -7,6 +10,8 @@ export type Person = {
   visits: number;
   progress: number;
   status: "relationship" | "complicated" | "single";
+  /** 新しいカラム用（セレクトボックス確認用）のロール情報 */
+  role: "admin" | "user" | "guest";
   subRows?: Person[];
 };
 
@@ -30,13 +35,15 @@ const newPerson = (): Person => {
       "complicated",
       "single",
     ])[0]!,
+    /** 追加: ランダムなロールを割り当てる */
+    role: faker.helpers.shuffle<Person["role"]>(["admin", "user", "guest"])[0]!,
   };
 };
 
 export function makeData(...lens: number[]) {
   const makeDataLevel = (depth = 0): Person[] => {
     const len = lens[depth]!;
-    return range(len).map((d): Person => {
+    return range(len).map((_d): Person => {
       return {
         ...newPerson(),
         subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
